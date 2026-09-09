@@ -1,0 +1,5 @@
+ccxt
+python-telegram-bot
+requests
+python-dotenv
+pillow
