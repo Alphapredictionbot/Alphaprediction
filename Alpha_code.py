@@ -2112,5 +2112,33 @@ print(f"🔁 Interval: {AUTO_TRADE_INTERVAL}s")
 print(f"📦 Min Qty: {MIN_TRADE_QUANTITY}")
 print(f"🛡️ Max Daily Loss: {MAX_DAILY_LOSS_PCT}%")
 print("=" * 65)
+# =========================================================
+# 🆕 HTTP HEALTH SERVER (for UptimeRobot)
+# =========================================================
+import http.server
+import socketserver
 
+def run_health_server():
+    """Simple HTTP server that responds 200 OK to health checks."""
+    class HealthHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"Alpha AI Bot is running!")
+        def log_message(self, format, *args):
+            pass  # Suppress logs
+
+    port = int(os.getenv("PORT", "10000"))
+    try:
+        with socketserver.TCPServer(("", port), HealthHandler) as httpd:
+            print(f"🌐 Health server running on port {port}")
+            httpd.serve_forever()
+    except Exception as e:
+        print(f"⚠️ Health server error: {e}")
+
+# Start health server in background thread
+health_thread = threading.Thread(target=run_health_server, daemon=True)
+health_thread.start()
+print("✅ Health server thread started")
 app.run_polling(drop_pending_updates=True)
